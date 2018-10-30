@@ -4,7 +4,7 @@ import participant
 
 def main():
 
-    path = '/users/HaleyFletcher/Documents/Professional/BigLittle/BigLittle/test_simple.txt'
+    path = '/users/HaleyFletcher/Documents/Professional/BigLittle/test_simple.txt'
     test_file = open(path, 'r')
 
     info = test_file.read()
@@ -27,10 +27,13 @@ def main():
         preferences = re.findall(regex, info, re.M)
         for match in preferences:
             new_person.preferences = match.splitlines()
+
         # print(preferences)
         # new_person.preferences = preferences.splitlines()
-        print(str(new_person) + ": ")
-        print(new_person.preferences)
 
+    all_matched = False
+    while not all_matched:
+        for person in preferred_group:
+            
 
 main()
