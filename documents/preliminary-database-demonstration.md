@@ -22,32 +22,30 @@
    ```
 
 
-2. Access a specific Users related Member entities.
+2. Access a specific Users related Member entities, specified by the user's first and last name.
 
    ```
-   Match (u:User {ID: 17})-[:MEMBERSHIP]->(m:Member)
+   Match (User {FirstName: "Waluigi", LastName:"Jones"})-[:MEMBERSHIP]->(m:Member)
    Return m
    ```
 
-3. Access a Member's most preffered Member.
+3. Access the User for a Member's most preffered Member.
 
    ```
-   Match (Member {ID: 17})-[p:PREFERS {rank: 1}]->(m:Member)
-   Return m
+   Match (m:Member {ID: 17})-[:PREFERS {rank: 1}]->(n:Member)<-[:MEMBERSHIP]-(u:User)
+   Return u
    ```
 
 4. Access all the matches for a specific organization.
 
    ```
-   Match (Organization {ID: 0})-[:HAS_MEMBER]->(Member)-[b:BIG]->()
+   Match (Organization {ID: 0})-[:HAS_MEMBER]->(Member)-[b:BIG]->(Member)
    Return b
    ```
 
 5. Access all of the organizations that a user is involved in.
 
    ```
-   Match (u:User)-[:MEMBERSHIP]->(Member)<-[b:HAS_MEMBER]-(Organization {ID: 0})
+   Match (u:User)-[:MEMBERSHIP]->(Member)<-[:HAS_MEMBER]-(Organization {ID: 0})
    Return u
    ```
-
-   ​
