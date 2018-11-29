@@ -1,4 +1,4 @@
-﻿ID,UserID,OrgID,Role
+﻿ID,UserID,OrganizationID,Role
 0,6,0,Organizer
 1,8,0,Big
 2,9,0,Big
@@ -13,7 +13,7 @@
 11,17,0,Little
 12,1,1,Organizer
 13,0,1,Big
-14,2,1,Big
+14,7,1,Big
 15,3,1,Big
 16,4,1,Big
 17,5,1,Big
