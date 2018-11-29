@@ -3,14 +3,15 @@ from py2neo import Graph, Schema
 graph = Graph(auth=("neo4j", "137137137"))
 graph.delete_all()
 
-tx = graph.begin()
-
 # Create Indexes for primary keys of entites
+tx = graph.begin()
 tx.run('''CREATE INDEX ON :Member(ID)''')
 tx.run('''CREATE INDEX ON :Organization(ID)''')
 tx.run('''CREATE INDEX ON :User(ID)''')
+tx.commit()
 
 # Create Entities
+tx = graph.begin()
 tx.run('''
     LOAD CSV WITH HEADERS FROM "file:///data/member.csv" AS row
     CREATE (m:Member)
@@ -32,8 +33,10 @@ tx.run('''
     SET u = row
     RETURN u
 ''')
+tx.commit()
 
 # Create Relationships
+tx = graph.begin()
 tx.run('''
     MATCH (n:User),(m:Member)
     WHERE n.ID = m.UserID
