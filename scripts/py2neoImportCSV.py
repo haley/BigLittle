@@ -16,7 +16,7 @@ tx.run('''
     CREATE (m:Member)
     SET m = row,
         m.ID = toInteger(row.ID),
-        m.OrganizationID = toInteger(row.OrganizationID)
+        m.OrganizationID = toInteger(row.OrganizationID),
         m.UserID = toInteger(row.UserID)
     RETURN m
 ''')
