@@ -1,44 +1,49 @@
 from py2neo import Graph, Schema
 
-create_index = '''CREATE INDEX ON :{entity}(ID)'''
-
-def _csv_to_neo_entity(path, entity):
-    return f'''
-        LOAD CSV WITH HEADERS FROM "{path}" AS row
-        CREATE (n:{entity})
-        SET n = row,
-            n.ID = toInteger(row.ID)
-        RETURN n
-    '''
-
-def _create_relationship(relater, relatee, relation):
-    return f'''
-        MATCH (n:{relater}),(m:{relatee})
-        WHERE n.ID = m.{relater}ID
-        CREATE (n)-[:{relation}]->(m)
-    '''
-
 graph = Graph(auth=("neo4j", "137137137"))
 graph.delete_all()
 
 tx = graph.begin()
+
+# Create Indexes for primary keys of entites
 tx.run('''CREATE INDEX ON :Member(ID)''')
 tx.run('''CREATE INDEX ON :Organization(ID)''')
 tx.run('''CREATE INDEX ON :User(ID)''')
-tx.commit()
 
-tx = graph.begin()
-tx.run(_csv_to_neo_entity(path="file:///data/member.csv", entity="Member"))
-tx.run(_csv_to_neo_entity(path="file:///data/organization.csv", entity="Organization"))
-tx.run(_csv_to_neo_entity(path="file:///data/user.csv", entity="User"))
-tx.commit()
+# Create Entities
+tx.run('''
+    LOAD CSV WITH HEADERS FROM "file:///data/member.csv" AS row
+    CREATE (m:Member)
+    SET m = row,
+        m.ID = toInteger(row.ID),
+        m.OrganizationID = toInteger(row.OrganizationID)
+        m.UserID = toInteger(row.UserID)
+    RETURN m
+''')
+tx.run('''
+    LOAD CSV WITH HEADERS FROM "file:///data/organization.csv" AS row
+    CREATE (o:Organization)
+    SET o = row
+    RETURN o
+''')
+tx.run('''
+    LOAD CSV WITH HEADERS FROM "file:///data/user.csv" AS row
+    CREATE (u:User)
+    SET u = row
+    RETURN u
+''')
 
-tx = graph.begin()
-tx.run(_create_relationship(relater="User", relatee="Member", relation="MEMBERSHIP"))
-tx.run(_create_relationship(relater="Organization", relatee="Member", relation="HAS_MEMBER"))
-tx.commit()
-
-tx = graph.begin()
+# Create Relationships
+tx.run('''
+    MATCH (n:User),(m:Member)
+    WHERE n.ID = m.UserID
+    CREATE (n)-[:MEMBERSHIP]->(m)
+''')
+tx.run('''
+    MATCH (o:Organization),(m:Member)
+    WHERE o.ID = m.OrganizationID
+    CREATE (o)-[:HAS_MEMBER]->(m)
+''')
 tx.run('''
     LOAD CSV WITH HEADERS FROM "file:///data/prefers.csv" AS row
     MATCH (m:Member {ID: toInteger(row.MemberID)}),(p:Member {ID: toInteger(row.PreferredMemberID)})
