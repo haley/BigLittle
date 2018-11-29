@@ -13,15 +13,6 @@ tx.commit()
 # Create Entities
 tx = graph.begin()
 tx.run('''
-    LOAD CSV WITH HEADERS FROM "file:///data/member.csv" AS row
-    CREATE (m:Member)
-    SET m = row,
-        m.ID = toInteger(row.ID),
-        m.OrganizationID = toInteger(row.OrganizationID),
-        m.UserID = toInteger(row.UserID)
-    RETURN m
-''')
-tx.run('''
     LOAD CSV WITH HEADERS FROM "file:///data/organization.csv" AS row
     CREATE (o:Organization)
     SET o = row,
@@ -40,23 +31,19 @@ tx.commit()
 # Create Relationships
 tx = graph.begin()
 tx.run('''
-    MATCH (n:User),(m:Member)
-    WHERE n.ID = m.UserID
-    CREATE (n)-[:MEMBERSHIP]->(m)
+    LOAD CSV WITH HEADERS FROM "file:///data/member.csv" AS row
+    MATCH (u:User {ID: toInteger(row.UserID)}),(o:Organization {ID: toInteger(row.OrganizationID)})
+    CREATE (u)-[:MEMBER {role: row.Role}]->(o)
 ''')
 tx.run('''
-    MATCH (o:Organization),(m:Member)
-    WHERE o.ID = m.OrganizationID
-    CREATE (o)-[:HAS_MEMBER]->(m)
+    LOAD CSV WITH HEADERS FROM "file:///data/prefer.csv" AS row
+    MATCH (u:User {ID: toInteger(row.UserID)}),(p:User {ID: toInteger(row.PreferredUserID)})
+    CREATE (u)-[:PREFERS {Rank: toInteger(row.Rank), OrganizationID: toInteger(row.OrganizationID)}]->(p)
 ''')
 tx.run('''
-    LOAD CSV WITH HEADERS FROM "file:///data/prefers.csv" AS row
-    MATCH (m:Member {ID: toInteger(row.MemberID)}),(p:Member {ID: toInteger(row.PreferredMemberID)})
-    CREATE (m)-[:PREFERS {rank: toInteger(row.Rank)}]->(p)
-''')
-tx.run('''
-    LOAD CSV WITH HEADERS FROM "file:///data/matched.csv" AS row
-    MATCH (b:Member {ID: toInteger(row.BigMemberID)}),(l:Member {ID: toInteger(row.LittleMemberID)})
-    CREATE (b)-[:BIG]->(l), (l)-[:LITTLE]->(b)
+    LOAD CSV WITH HEADERS FROM "file:///data/match.csv" AS row
+    MATCH (b:User {ID: toInteger(row.BigUserID)}),(l:User {ID: toInteger(row.LittleUserID)})
+    CREATE (b)-[:BIG {OrganizationID: toInteger(row.OrganizationID)}]->(l),
+        (l)-[:LITTLE {OrganizationID: toInteger(row.OrganizationID)}]->(b)
 ''')
 tx.commit()
