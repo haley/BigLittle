@@ -24,13 +24,15 @@ tx.run('''
 tx.run('''
     LOAD CSV WITH HEADERS FROM "file:///data/organization.csv" AS row
     CREATE (o:Organization)
-    SET o = row
+    SET o = row,
+        o.ID = toInteger(row.ID)
     RETURN o
 ''')
 tx.run('''
     LOAD CSV WITH HEADERS FROM "file:///data/user.csv" AS row
     CREATE (u:User)
-    SET u = row
+    SET u = row,
+        u.ID = toInteger(row.ID)
     RETURN u
 ''')
 tx.commit()
