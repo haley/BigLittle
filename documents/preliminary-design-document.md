@@ -76,4 +76,4 @@ The data that will be stored in the Big-Little database include:
 
 ## Preliminary Entity Relation Diagram
 
-![ERD](resources/ERD.png)
+![ERD](../resources/ERD.png)

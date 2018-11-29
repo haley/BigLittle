@@ -53,4 +53,4 @@ The database produced by this project will support a future senior thesis projec
 
 ## 2.3 Entity Relation Diagram
 
-![ERD](resources/ERD.png)
+![ERD](../resources/detailedERD.png)
