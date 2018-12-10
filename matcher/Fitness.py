@@ -23,14 +23,21 @@ class Fitness:
                 self.littles.remove(little)
                 self.bigs.remove(big)
 
-        print(self.littles)
-        print(self.bigs)
         self._matrix = [[[0] for i in range(len(self.littles))] for j in range(len(self.bigs))]
         for l, little in enumerate(self.littles):
             for b, big in enumerate(self.bigs):
                 fitness = little.rank_of(big, bignum)
                 fitness += big.rank_of(little, littlenum)
                 self._matrix[l][b] = fitness
+
+    def get_bigs(self):
+        return self.bigs
+
+    def get_littles(self):
+        return self.littles
+
+    def get_automatches(self):
+        return self.automatches
 
     def fitness_of(self, little, big):
         return self._matrix[self.littles.index(little)][self.bigs.index(big)]
