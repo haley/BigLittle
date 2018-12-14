@@ -8,7 +8,7 @@
 
 #### Big Little ERD
 
-![ERD](../resources/finalERD.png)
+![ERD](../../resources/finalERD.png)
 
 
 
